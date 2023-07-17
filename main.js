@@ -1,35 +1,38 @@
-import Vue from 'vue'
 import App from './App'
 
-// vuex
-import store from './store'
+// 引入 uView UI
+import uView from './uni_modules/vk-uview-ui';
 
-// 引入全局uView
-import uView from '@/uni_modules/uview-ui'
+// #ifndef VUE3
 
-import mixin from './common/mixin'
+import Vue from 'vue'
 
-Vue.prototype.$store = store
+// 使用 uView UI
+Vue.use(uView);
 
 Vue.config.productionTip = false
-
 App.mpType = 'app'
-Vue.use(uView)
+const app = new Vue({
+	...App
+})
+app.$mount()
 
-// #ifdef MP
-// 引入uView对小程序分享的mixin封装
-const mpShare = require('@/uni_modules/uview-ui/libs/mixin/mpShare.js')
-Vue.mixin(mpShare)
 // #endif
 
-Vue.mixin(mixin)
 
-const app = new Vue({
-    store,
-    ...App
-})
 
-// 引入请求封装
-require('./util/request/index')(app)
+// #ifdef VUE3
 
-app.$mount()
+import { createSSRApp } from 'vue'
+export function createApp() {
+	const app = createSSRApp(App)
+
+	// 使用 uView UI
+	app.use(uView)
+
+	return {
+		app
+	}
+}
+
+// #endif
